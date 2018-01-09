@@ -1,0 +1,24 @@
+<resources>
+    <string name="app_name">android-obd-reader</string>
+    <string name="waiting_for_obd">Waiting for paired OBD adapter</string>
+    <string name="connecting_to_ecu">Connecting to ECU</string>
+    <string name="obd2_adapter_not_responding">The OBD adapter is not responding</string>
+    <string name="connected_ok">OBD connected</string>
+
+    <!--these string not available in Arabic-->
+    <string name="fuel_type_not_supported">Fuel type sensor not available."</string>
+    <string name="searching_protocol">Searching protocol."</string>
+    <string name="searching_supported_sensor">Searching supported sensors."</string>
+    <string name="feedback_content_cant_less_than_5">Feedback text cannot be less than 5 characters.</string>
+    <string name="image_request_failed">Failed to process image.</string>
+    <string name="track_not_available">Track not available.</string>
+    <string name="accept_permission_for_location">You will not receive location until accept location permission.</string>
+    <string name="accept_permission_in_app_settings">You will not receive location until accept location permission in Settings-Apps-TeCar-HeadUnit-Permissions.</string>
+    <string name="syncing_not_completed_yet">Trip location not synced yet. Please check internet connection and wait...</string>
+    <string name="unable_to_connect">Unable to connect with ECU.</string>
+
+    <string name="bluetooth_unsupported">Device does not support bluetooth.</string>
+    <string name="maf_not_supporte">Fuel related sensors not available, you will not receive Fuel consumption and Cost.</string>
+    <string name="engine_time_not_supported">Run time since engine start not supported."</string>
+
+</resources>
