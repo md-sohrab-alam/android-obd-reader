@@ -19,9 +19,13 @@ import java.io.InputStream;
  */
 public class TroubleCodesCommand extends ObdCommand {
 
-    /** Constant <code>dtcLetters={'P', 'C', 'B', 'U'}</code> */
+    /**
+     * Constant <code>dtcLetters={'P', 'C', 'B', 'U'}</code>
+     */
     protected final static char[] dtcLetters = {'P', 'C', 'B', 'U'};
-    /** Constant <code>hexArray="0123456789ABCDEF".toCharArray()</code> */
+    /**
+     * Constant <code>hexArray="0123456789ABCDEF".toCharArray()</code>
+     */
     protected final static char[] hexArray = "0123456789ABCDEF".toCharArray();
 
     protected StringBuilder codes = null;
@@ -36,26 +40,27 @@ public class TroubleCodesCommand extends ObdCommand {
 
     /**
      * Copy ctor.
-     *
-     *
      */
     public TroubleCodesCommand(TroubleCodesCommand other) {
         super(other);
         codes = new StringBuilder();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void fillBuffer() {
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void performCalculations() {
         final String result = getResult();
         String workingData;
         int startIndex = 0;//Header size.
-
         String canOneFrame = result.replaceAll("[\r\n]", "");
         int canOneFrameLength = canOneFrame.length();
         if (canOneFrameLength <= 16 && canOneFrameLength % 4 == 0) {//CAN(ISO-15765) protocol one frame.
@@ -67,6 +72,8 @@ public class TroubleCodesCommand extends ObdCommand {
         } else {//ISO9141-2, KWP2000 Fast and KWP2000 5Kbps (ISO15031) protocols.
             workingData = result.replaceAll("^43|[\r\n]43|[\r\n]", "");
         }
+
+        codes.delete(0, codes.length());
         for (int begin = startIndex; begin < workingData.length(); begin += 4) {
             String dtc = "";
             byte b1 = hexStringToByteArray(workingData.charAt(begin));
@@ -74,7 +81,7 @@ public class TroubleCodesCommand extends ObdCommand {
             int ch2 = ((b1 & 0x30) >> 4);
             dtc += dtcLetters[ch1];
             dtc += hexArray[ch2];
-            dtc += workingData.substring(begin+1, begin + 4);
+            dtc += workingData.substring(begin + 1, begin + 4);
             if (dtc.equals("P0000")) {
                 return;
             }
@@ -97,14 +104,18 @@ public class TroubleCodesCommand extends ObdCommand {
         return codes.toString();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String getCalculatedResult() {
         return String.valueOf(codes);
     }
 
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void readRawData(InputStream in) throws IOException {
         byte b;
@@ -133,13 +144,17 @@ public class TroubleCodesCommand extends ObdCommand {
 
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String getFormattedResult() {
         return codes.toString();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String getName() {
         return AvailableCommandNames.TROUBLE_CODES.getValue();

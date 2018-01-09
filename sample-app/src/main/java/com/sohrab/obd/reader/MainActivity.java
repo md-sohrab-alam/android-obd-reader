@@ -50,6 +50,9 @@ public class MainActivity extends AppCompatActivity {
         ObdConfiguration.setmObdCommands(this, null);
 
 
+        // set gas price per litre so that gas cost can calculated. Default is 7 $/l
+        float gasPrice = 7; // per litre, you should initialize according to your requirement.
+        Preferences.get(this).setGasPrice(gasPrice);
         /**
          * Register receiver with some action related to OBD connection status
          */
