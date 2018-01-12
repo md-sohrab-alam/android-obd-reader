@@ -97,9 +97,8 @@ BroadcastReceiver mObdReaderReceiver = new BroadcastReceiver() {
             }
         }
     };	
-    
-    ```
-	
+ ```
+ 
 ## Tested
 
 * Head Unit (Generally used in Cars)
