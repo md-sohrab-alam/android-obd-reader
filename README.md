@@ -1,4 +1,8 @@
 ## android-obd-reader
+
+[![Open Source Love](https://badges.frapsoft.com/os/v2/open-source.svg?v=103)](https://github.com/md-sohrab-alam/android-obd-reader) 
+[![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](https://github.com/md-sohrab-alam/android-obd-reader/blob/master/LICENSE)
+
 Android OBD-II Reader library that support standard PIDs (Mode 01). 
 
 ![screenshot](/PidsValuesScreenShort.png)
@@ -103,6 +107,16 @@ BroadcastReceiver mObdReaderReceiver = new BroadcastReceiver() {
 
 * Head Unit (Generally used in Cars)
 * Mobile 
+
+## Author
+
+[Sohrab Alam](https://www.linkedin.com/in/sohrab-alam-8105474b)
+
+
+## License
+
+This project is licensed under the Apache License, Version 2.0 - see the [LICENSE.md](LICENSE.md) file for details
+
   
    
  
