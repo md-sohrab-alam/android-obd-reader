@@ -10,16 +10,16 @@ I was working for an application that read Car real time data through OBD-II. Fo
 Check which PIDs supported in your vehicle if you do not set any command.
 Based on standard PIDs, we are calculating followings:
 
-1: Distance Traveled 
-2: Idle Time
-3: Driving Time
-4: Max Speed in one Trip
-5: Max RPM 
-6: Idling Fuel Consumtion
-7: Driving Fuel Consumtion
-8: Instant Fuel Consumtion
-9: Rapid Acceleration Times (How many times speed increases very fast)
-10:Rapid Declaration Times (How many time emergency brake is used)
+* Distance Traveled 
+* Idle Time
+* Driving Time
+* Max Speed in one Trip
+* Max RPM 
+* Idling Fuel Consumtion
+* Driving Fuel Consumtion
+* Instant Fuel Consumtion
+* Rapid Acceleration Times (How many times speed increases very fast)
+* Rapid Declaration Times (How many time emergency brake is used)
 
 ## Source Enviourment
 
@@ -36,39 +36,47 @@ Based on standard PIDs, we are calculating followings:
 Add the following to your build.gradle to use:  
 
 dependencies {
+
     compile 'com.sohrab:obd-reader:1.0.0'
+    
 }
 
 # Usage
 
    * Follow sample-app:   
-   
+   ``` java
    ArrayList<ObdCommand> obdCommands = new ArrayList<>();
         obdCommands.add(new SpeedCommand());
         obdCommands.add(new RPMCommand());
         ObdConfiguration.setmObdCommands(this, obdCommands);
+```
 
-If you want to read all standard PIDs commands, pass null in the second argument like        
-      //  ObdConfiguration.setmObdCommands(this, null);
+ ``` java
+//If you want to read all standard PIDs commands, pass null in the second argument like        
+        ObdConfiguration.setmObdCommands(this, null);
+```      
 
-Set gas price per liter so that gas cost can be calculated accordingly. Default is 7 $/l
-
+``` java
+//Set gas price per liter so that gas cost can be calculated accordingly. Default is 7 $/l
 float gasPrice = 7; // per litre, you should initialize according to your requirement.
 ObdPreferences.get(this).setGasPrice(gasPrice);
+```
 
-Register receiver with some action related to OBD connection status and read PID values
-
+ ``` java
+//Register receiver with some action related to OBD connection status and read PID values
 IntentFilter intentFilter = new IntentFilter();
 intentFilter.addAction(ACTION_READ_OBD_REAL_TIME_DATA);
 intentFilter.addAction(ACTION_OBD_CONNECTION_STATUS);
 registerReceiver(mObdReaderReceiver, intentFilter);
-
-start service that keep running in background for connecting and execute command until you stop
-
+```
+ 
+ ``` java
+//start service that keep running in background for connecting and execute command until you stop
 startService(new Intent(this, ObdReaderService.class));
+```
 
-Broadcast Receiver to receive OBD connection status and real time data
-
+``` java
+//Broadcast Receiver to receive OBD connection status and real time data
 BroadcastReceiver mObdReaderReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {            
@@ -89,6 +97,8 @@ BroadcastReceiver mObdReaderReceiver = new BroadcastReceiver() {
             }
         }
     };	
+    
+    ```
 	
 ## Tested
 
