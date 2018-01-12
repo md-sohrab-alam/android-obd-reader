@@ -13,7 +13,7 @@ ext {
     siteUrl = 'https://github.com/md-sohrab-alam/android-obd-reader'
     gitUrl = 'https://github.com/md-sohrab-alam/android-obd-reader.git'
 
-    libraryVersion = '1.0.0'
+    libraryVersion = '1.0.1'
 
     developerId = 'md-sohrab-alam'
     developerName = 'Sohrab Alam'
