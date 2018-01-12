@@ -11,9 +11,9 @@ import com.sohrab.obd.reader.constants.PreferencesConstants;
  * This is singleton class to save data as key values paires.
  */
 
-public class Preferences implements PreferencesConstants {
+public class ObdPreferences implements PreferencesConstants {
 
-    private static Preferences mInstance;
+    private static ObdPreferences mInstance;
     private SharedPreferences mPrefs;
     private SharedPreferences.Editor mEditor;
 
@@ -22,7 +22,7 @@ public class Preferences implements PreferencesConstants {
      *
      * @param context
      */
-    private Preferences(Context context) {
+    private ObdPreferences(Context context) {
         mPrefs = context.getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE);
         mEditor = mPrefs.edit();
         mEditor.apply();
@@ -31,9 +31,9 @@ public class Preferences implements PreferencesConstants {
 
     /**
      *
-     * @return: instance of Preferences
+     * @return: instance of ObdPreferences
      */
-    public static Preferences get(Context context) {
+    public static ObdPreferences get(Context context) {
         if (mInstance == null) {
             init(context);
           //  ObdReaderApplication.getInstance().initPreferences();
@@ -42,13 +42,13 @@ public class Preferences implements PreferencesConstants {
     }
 
     /**
-     * static method to create instance of Preferences
+     * static method to create instance of ObdPreferences
      * @param context
-     * @return instance of Preferences
+     * @return instance of ObdPreferences
      */
-    public static Preferences init(Context context) {
+    public static ObdPreferences init(Context context) {
         if (mInstance == null)
-            mInstance = new Preferences(context);
+            mInstance = new ObdPreferences(context);
         return mInstance;
     }
 

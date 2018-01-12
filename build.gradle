@@ -5,15 +5,6 @@ buildscript {
     repositories {
         google()
         jcenter()
-/*
-        repositories {
-            maven {
-                name 'android-obd-reader'
-                url 'https://dl.bintray.com/md-sohrab-alam/android-obd-reader'
-            }
-        }
-*/
-
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.0.1'

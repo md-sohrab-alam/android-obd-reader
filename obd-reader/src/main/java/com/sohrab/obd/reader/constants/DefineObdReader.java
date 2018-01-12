@@ -8,17 +8,12 @@ package com.sohrab.obd.reader.constants;
 
 public interface DefineObdReader {
 
-    String ACTION_CONNECTION_STATUS_MSG = "ACTION_CONNECTION_STATUS_MSG";
-    String ACTION_OBD_MAF_STATUS = "ACTION_OBD_MAF_STATUS";
+    String ACTION_OBD_CONNECTION_STATUS = "ACTION_OBD_CONNECTION_STATUS";
     /**
      * Real-time data
      */
     String ACTION_READ_OBD_REAL_TIME_DATA = "com.sohrab.obd.reader.ACTION_READ_OBD_REAL_TIME_DATA";
-
-    String ACTION_OBD_CONNECTED = "com.sohrab.obd.reader.ACTION_OBD_CONNECTED";
-    // receive when OBD-2 disconnected
-    String ACTION_OBD_DISCONNECTED = "com.sohrab.obd.reader.ACTION_OBD_DISCONNECTED";
     // intent key used to send data
-     String INTENT_EXTRA_DATA = "com.sohrab.obd.reader.INTENT_EXTRA_DATA";
+     String INTENT_OBD_EXTRA_DATA = "com.sohrab.obd.reader.INTENT_OBD_EXTRA_DATA";
 
 }

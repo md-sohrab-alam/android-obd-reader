@@ -25,21 +25,18 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Binder;
+import android.os.Build;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.widget.Toast;
 
-import com.sohrab.obd.reader.application.Preferences;
+import com.sohrab.obd.reader.application.ObdPreferences;
 import com.sohrab.obd.reader.constants.DefineObdReader;
 import com.sohrab.obd.reader.enums.ObdProtocols;
 import com.sohrab.obd.reader.obdCommand.ObdCommand;
 import com.sohrab.obd.reader.obdCommand.ObdConfiguration;
 import com.sohrab.obd.reader.obdCommand.control.TroubleCodesCommand;
-import com.sohrab.obd.reader.obdCommand.fuel.FindFuelTypeCommand;
-import com.sohrab.obd.reader.obdCommand.protocol.AvailablePidsCommand;
-import com.sohrab.obd.reader.obdCommand.protocol.AvailablePidsCommand_01_20;
-import com.sohrab.obd.reader.obdCommand.protocol.AvailablePidsCommand_41_60;
 import com.sohrab.obd.reader.obdCommand.protocol.EchoOffCommand;
 import com.sohrab.obd.reader.obdCommand.protocol.LineFeedOffCommand;
 import com.sohrab.obd.reader.obdCommand.protocol.ObdResetCommand;
@@ -127,8 +124,8 @@ public class ObdReaderService extends IntentService implements DefineObdReader {
 
         L.i("onHandleIntent bottom");
         //  mNotificationManager.cancel(NOTIFICATION_ID);
-        Preferences.get(getApplicationContext()).setServiceRunningStatus(false);
-        Preferences.get(getApplicationContext()).setIsOBDconnected(false);
+        ObdPreferences.get(getApplicationContext()).setServiceRunningStatus(false);
+        ObdPreferences.get(getApplicationContext()).setIsOBDconnected(false);
         TripRecord.getTripRecode(this).clear();
     }
 
@@ -145,7 +142,7 @@ public class ObdReaderService extends IntentService implements DefineObdReader {
             executeCommand();
         }
 
-        if (Preferences.get(getApplicationContext()).getServiceRunningStatus()) {
+        if (ObdPreferences.get(getApplicationContext()).getServiceRunningStatus()) {
             L.i("findObdDevicesAndConnect()");
             findObdDevicesAndConnect();
         }
@@ -157,7 +154,7 @@ public class ObdReaderService extends IntentService implements DefineObdReader {
      */
     private void findPairedDevices() {
 
-        while (!isConnected && Preferences.get(getApplicationContext()).getServiceRunningStatus()) {
+        while (!isConnected && ObdPreferences.get(getApplicationContext()).getServiceRunningStatus()) {
             if (mBluetoothAdapter != null) {
                 boolean deviceFound = false;
 
@@ -183,7 +180,7 @@ public class ObdReaderService extends IntentService implements DefineObdReader {
                         mLastNotificationType = DEVICE_NOT_PAIRED;
                         updateNotification(getString(R.string.waiting_for_obd));
                     }*/
-                    sendBroadcast(ACTION_CONNECTION_STATUS_MSG, getString(R.string.waiting_for_obd));
+                    sendBroadcast(ACTION_OBD_CONNECTION_STATUS, getString(R.string.waiting_for_obd));
                 }
             }
         }
@@ -290,12 +287,12 @@ public class ObdReaderService extends IntentService implements DefineObdReader {
                     if ((mSupportedPids[12] != PID_STATUS_SUCCESS) || (mSupportedPids[11] != PID_STATUS_SUCCESS)) {
                         // speed pid not supportedsupported
                         // updateNotification(getString(R.string.unable_to_connect));
-                        sendBroadcast(ACTION_CONNECTION_STATUS_MSG, getString(R.string.unable_to_connect));
+                        sendBroadcast(ACTION_OBD_CONNECTION_STATUS, getString(R.string.unable_to_connect));
                         return;
                     }
                 }
 
-                sendBroadcast(ACTION_CONNECTION_STATUS_MSG, getString(R.string.obd2_adapter_not_responding));
+                sendBroadcast(ACTION_OBD_CONNECTION_STATUS, getString(R.string.obd2_adapter_not_responding));
 /*
                 if (mLastNotificationType != OBD_NOT_RESPONDING) {
                     mLastNotificationType = OBD_NOT_RESPONDING;
@@ -307,75 +304,6 @@ public class ObdReaderService extends IntentService implements DefineObdReader {
 
     }
 
-    /**
-     * This method is used to check whether our required PIDs sensor is available in Car or not
-     *
-     * @param showMsg : show notification about sensor
-     * @throws Exception
-     */
-    private void checkPid0To20(boolean showMsg) throws Exception {
-        String availablePidsCommand_01_20 = checkPids(new AvailablePidsCommand_01_20());
-        mSupportedPids = availablePidsCommand_01_20.toCharArray();
-        if (mSupportedPids != null && mSupportedPids.length == 32 &&
-                mSupportedPids[11] == PID_STATUS_SUCCESS && mSupportedPids[12] == PID_STATUS_SUCCESS) {
-            // speed and rpm pid supported
-            mIsRunningSuccess = true;
-
-            if (!showMsg)
-                return;
-
-            if (mSupportedPids[30] != PID_STATUS_SUCCESS) {
-                //engine runtime pid not supported
-                TripRecord.getTripRecode(this).setmIsEngineRuntimeSupported(false);
-            }
-
-            if (mSupportedPids[15] != PID_STATUS_SUCCESS) {
-                //MAF pid not supported
-                TripRecord.getTripRecode(this).setmIsMAFSupported(false);
-                // Intake air temperature pid or Manifold absolute pressure pid not supported.
-                if (mSupportedPids[14] != PID_STATUS_SUCCESS || mSupportedPids[10] != PID_STATUS_SUCCESS) {
-                    TripRecord.getTripRecode(this).setmIsTempPressureSupported(false);
-                    sendBroadcast(ACTION_OBD_MAF_STATUS, getString(R.string.maf_not_supporte));
-                    //updateNotification(getString(R.string.maf_not_supporte));
-                }
-            }
-
-            // this pid check FindFuelTypeCommand
-            String availablePidsCommand_21_40 = checkPids(new AvailablePidsCommand_41_60());
-            char[] availablePidsCommand_21_40Chars = availablePidsCommand_21_40.toCharArray();
-            if (availablePidsCommand_21_40Chars != null && availablePidsCommand_21_40Chars.length == 32) {
-                if (availablePidsCommand_21_40Chars[16] == PID_STATUS_SUCCESS) {
-                    FindFuelTypeCommand findFuelTypeCommand = new FindFuelTypeCommand();
-                    findFuelTypeCommand.run(mSocket.getInputStream(), mSocket.getOutputStream());
-                    TripRecord.getTripRecode(this).updateTrip(findFuelTypeCommand.getName(), findFuelTypeCommand);
-                    L.i("FindFuelTypeCommand pid supported value :: " + findFuelTypeCommand.getCalculatedResult());
-                } else {
-                    Preferences.get(getApplicationContext()).setFuelType(-1);
-                    L.i("FindFuelTypeCommand pid not supported");
-                }
-            }
-
-        } else {
-            mIsRunningSuccess = false;
-        }
-
-    }
-
-    /**
-     * send  specific AvailablePidsCommand and return corresponding result in string
-     *
-     * @param availablePidsCommand
-     * @return string of supported pids
-     * @throws Exception
-     */
-    private String checkPids(AvailablePidsCommand availablePidsCommand) throws Exception {
-        availablePidsCommand.run(mSocket.getInputStream(), mSocket.getOutputStream());
-        String availablePidsCommand_01_20String = availablePidsCommand.getCalculatedResult();
-        L.i("availablePidsCommand_01_20String result:: " + availablePidsCommand_01_20String);
-        availablePidsCommand_01_20String = availablePidsCommand_01_20String.substring(availablePidsCommand_01_20String.length() - 8);
-        L.i("availablePidsCommand_01_20String 0 to 8 : " + availablePidsCommand_01_20String);
-        return getSupportedPID(availablePidsCommand_01_20String);
-    }
 
     /**
      * Once OBD-2 connected, this method will execute to fetch data continuously until OBD disconnected or Service stopped.
@@ -384,24 +312,8 @@ public class ObdReaderService extends IntentService implements DefineObdReader {
         L.i("executing commands thread is :: " + Thread.currentThread().getId());
         TripRecord tripRecord = TripRecord.getTripRecode(this);
         ArrayList<ObdCommand> commands = (ArrayList<ObdCommand>) ObdConfiguration.getmObdCommands().clone();
-       /* ArrayList<ObdCommand> commands = new ArrayList<>();
-        commands.add(new SpeedCommand());
-        commands.add(new RPMCommand());
-
-        if (tripRecord.ismIsMAFSupported()) {
-            commands.add(new MassAirFlowCommand());
-        } else if (tripRecord.ismIsTempPressureSupported()) {
-            commands.add(new IntakeManifoldPressureCommand());
-            commands.add(new AirIntakeTemperatureCommand());
-        }
-
-        if (tripRecord.ismIsEngineRuntimeSupported()) {
-            commands.add(new RuntimeCommand());
-        }
-        commands.add(new FindFuelTypeCommand());
-*/
         int count = 0;
-        while (mSocket != null && mSocket.isConnected() && commands.size() > count && isConnected && Preferences.get(getApplicationContext()).getServiceRunningStatus()) {
+        while (mSocket != null && mSocket.isConnected() && commands.size() > count && isConnected && ObdPreferences.get(getApplicationContext()).getServiceRunningStatus()) {
 
             ObdCommand command = commands.get(count);
             try {
@@ -459,7 +371,7 @@ public class ObdReaderService extends IntentService implements DefineObdReader {
      */
     private void sendBroadcast(final String action, String data) {
         final Intent intent = new Intent(action);
-        intent.putExtra(ObdReaderService.INTENT_EXTRA_DATA, data);
+        intent.putExtra(ObdReaderService.INTENT_OBD_EXTRA_DATA, data);
         sendBroadcast(intent);
     }
 
@@ -477,8 +389,8 @@ public class ObdReaderService extends IntentService implements DefineObdReader {
     public void onCreate() {
         super.onCreate();
         //fetchLocation();
-        Preferences.get(getApplicationContext()).setServiceRunningStatus(true);
-        Preferences.get(getApplicationContext()).setIsOBDconnected(false);
+        ObdPreferences.get(getApplicationContext()).setServiceRunningStatus(true);
+        ObdPreferences.get(getApplicationContext()).setIsOBDconnected(false);
         //   mNotificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         L.i("Service Created :: ");
     }
@@ -515,7 +427,11 @@ public class ObdReaderService extends IntentService implements DefineObdReader {
             }
         }
 
-        mBluetoothAdapter = mBluetoothManager.getAdapter();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+            mBluetoothAdapter = mBluetoothManager.getAdapter();
+        } else {
+            mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        }
         if (mBluetoothAdapter == null) {
             return false;
         }
@@ -576,8 +492,8 @@ public class ObdReaderService extends IntentService implements DefineObdReader {
         L.i("service onDestroy");
         //mNotificationManager.cancel(NOTIFICATION_ID);
         closeSocket();
-        Preferences.get(getApplicationContext()).setServiceRunningStatus(false);
-        Preferences.get(getApplicationContext()).setIsOBDconnected(false);
+        ObdPreferences.get(getApplicationContext()).setServiceRunningStatus(false);
+        ObdPreferences.get(getApplicationContext()).setIsOBDconnected(false);
         TripRecord.getTripRecode(this).clear();
     }
 
@@ -620,7 +536,7 @@ public class ObdReaderService extends IntentService implements DefineObdReader {
 
     @Override
     public boolean stopService(Intent name) {
-        Preferences.get(getApplicationContext()).setServiceRunningStatus(false);
+        ObdPreferences.get(getApplicationContext()).setServiceRunningStatus(false);
         return super.stopService(name);
 
     }
@@ -634,101 +550,21 @@ public class ObdReaderService extends IntentService implements DefineObdReader {
         }
 */
 
-        Preferences.get(getApplicationContext()).setIsOBDconnected(false);
+        ObdPreferences.get(getApplicationContext()).setIsOBDconnected(false);
         isConnected = false;
         closeSocket();
         L.i("socket disconnected :: ");
-        broadcastUpdate(ACTION_OBD_DISCONNECTED);
+      //  broadcastUpdate(ACTION_OBD_DISCONNECTED);
+        sendBroadcast(ACTION_OBD_CONNECTION_STATUS, getString(R.string.connect_lost));
     }
 
     /*Method used to set device connected state through the application...*/
     private void setConnection(boolean isFromBle) {
 
-        Preferences.get(getApplicationContext()).setIsOBDconnected(true);
+        ObdPreferences.get(getApplicationContext()).setIsOBDconnected(true);
         isConnected = true;
-        sendBroadcast(ACTION_OBD_CONNECTED, String.valueOf(isFromBle));
-        final TripRecord tripRecord = TripRecord.getTripRecode(this);
-
-    }
-
-
-    /**
-     * @param cmdString AvailableCommand reponse in string
-     * @return
-     * @throws Exception
-     */
-    private String getSupportedPID(String cmdString) throws Exception {
-        char[] chars = cmdString.toCharArray();
-        StringBuilder stringBuilder = new StringBuilder();
-        for (char c : chars) {
-            int n = getHexToDecimal(c);
-            stringBuilder.append(getDecToBin(n));
-        }
-        L.i("Array :: " + stringBuilder);
-        return stringBuilder.toString();
-
-    }
-
-    /**
-     * convert decimal values to binary with min 4 digit. like 2 in binary is 10, convert 10 into 0010.
-     *
-     * @param n
-     * @return string of binary data
-     * @throws Exception
-     */
-    private String getDecToBin(int n) throws Exception {
-
-        StringBuilder stringBuilder = new StringBuilder();
-        while (n > 0) {
-            stringBuilder.append(n % 2);
-            n /= 2;
-        }
-        for (int i = stringBuilder.length(); i < 4; i++) {
-            stringBuilder.append("0");
-        }
-        L.i(stringBuilder.toString());
-        return stringBuilder.reverse().toString();
-    }
-
-    /**
-     * convert hexadicaml single character into decimal
-     *
-     * @param c
-     * @return
-     * @throws Exception
-     */
-    private int getHexToDecimal(char c) throws Exception {
-        int n = 0;
-        switch (c) {
-
-            case 'A':
-                n = 10;
-                break;
-
-            case 'B':
-                n = 11;
-                break;
-
-            case 'C':
-                n = 12;
-                break;
-
-            case 'D':
-                n = 13;
-                break;
-            case 'E':
-                n = 14;
-                break;
-            case 'F':
-                n = 15;
-                break;
-
-            default:
-                n = Integer.parseInt(c + "");
-        }
-
-        return n;
-
+       // sendBroadcast(ACTION_OBD_CONNECTED, String.valueOf(isFromBle));
+        sendBroadcast(ACTION_OBD_CONNECTION_STATUS, getString(R.string.obd_connected));
     }
 
     /**

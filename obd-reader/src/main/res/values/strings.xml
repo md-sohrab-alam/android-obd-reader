@@ -3,7 +3,8 @@
     <string name="waiting_for_obd">Waiting for paired OBD adapter</string>
     <string name="connecting_to_ecu">Connecting to ECU</string>
     <string name="obd2_adapter_not_responding">The OBD adapter is not responding</string>
-    <string name="connected_ok">OBD connected</string>
+    <string name="obd_connected">OBD Connected</string>
+    <string name="connect_lost">Connect Lost</string>
 
     <!--these string not available in Arabic-->
     <string name="fuel_type_not_supported">Fuel type sensor not available."</string>

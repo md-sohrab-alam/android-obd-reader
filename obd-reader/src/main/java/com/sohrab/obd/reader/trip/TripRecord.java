@@ -3,7 +3,7 @@ package com.sohrab.obd.reader.trip;
 
 import android.content.Context;
 
-import com.sohrab.obd.reader.application.Preferences;
+import com.sohrab.obd.reader.application.ObdPreferences;
 import com.sohrab.obd.reader.constants.DefineObdReader;
 import com.sohrab.obd.reader.enums.AvailableCommandNames;
 import com.sohrab.obd.reader.enums.FuelType;
@@ -255,7 +255,7 @@ public class TripRecord implements DefineObdReader {
     }
 
     public float getmGasCost() {
-        return (mIsMAFSupported || mIsTempPressureSupported) ? (mIdlingFuelConsumption + mDrivingFuelConsumption) * Preferences.get(sContext.getApplicationContext()).getGasPrice() : MINUS_ONE;
+        return (mIsMAFSupported || mIsTempPressureSupported) ? (mIdlingFuelConsumption + mDrivingFuelConsumption) * ObdPreferences.get(sContext.getApplicationContext()).getGasPrice() : MINUS_ONE;
     }
 
     public boolean ismIsMAFSupported() {
@@ -353,7 +353,7 @@ public class TripRecord implements DefineObdReader {
                 break;
 
             case FUEL_TYPE:
-                if (Preferences.get(sContext.getApplicationContext()).getFuelType() == 0)
+                if (ObdPreferences.get(sContext.getApplicationContext()).getFuelType() == 0)
                     getFuelTypeValue(command.getFormattedResult());
                 break;
 
@@ -508,7 +508,7 @@ public class TripRecord implements DefineObdReader {
         }
 
         if (fuelTypeValue != 0) {
-            Preferences.get(sContext.getApplicationContext()).setFuelType(mFuelTypeValue);
+            ObdPreferences.get(sContext.getApplicationContext()).setFuelType(mFuelTypeValue);
             mFuelTypeValue = fuelTypeValue;
         }
     }
