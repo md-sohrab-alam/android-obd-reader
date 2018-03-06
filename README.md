@@ -3,12 +3,12 @@
 [![Open Source Love](https://badges.frapsoft.com/os/v2/open-source.svg?v=103)](https://github.com/md-sohrab-alam/android-obd-reader) 
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](https://github.com/md-sohrab-alam/android-obd-reader/blob/master/LICENSE)
 
-Android OBD-II Reader library that support standard PIDs (Mode 01). 
+Android OBD-II Reader library that support standard PIDs (Mode 01) in Mobile and Head Unit (insatalled in Car). 
 
 ![screenshot](/PidsValuesScreenShort.png)
 
 ## Motivation
-I was working for an application that read Car real time data through OBD-II. For connectivity of Car Head Unit with OBD-II and read real time data, we spend lots of time because of no proper documentation and connectivity guide. Therefore, I developed this library so that if anyone looking for the same, they can use and save time.
+I was working for an application that read Car real time data through OBD-II. I found a library https://github.com/pires/obd-java-api , it is working fine in mobile, but there is problem to connect OBD with with Head Unit. So, for connectivity of Car Head Unit with OBD-II and read real time data, we spend lots of time because of no proper documentation and connectivity guide. Therefore, I developed this library so that if anyone looking for the same, they can use and save time.
 
 ## Feature
 Check which PIDs supported in your vehicle if you do not set any command.
