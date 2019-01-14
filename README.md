@@ -112,20 +112,14 @@ BroadcastReceiver mObdReaderReceiver = new BroadcastReceiver() {
 
 [Sohrab Alam](https://www.linkedin.com/in/sohrab-alam-8105474b)
 
+## Appreciation
+Thank you to all. It feels good to see that our work is appreciated.
+
+[![paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=F82BAARBNDAJ6)
+
 
 ## License
 
 This project is licensed under the Apache License, Version 2.0 - see the [LICENSE.md](LICENSE.md) file for details
 
   
-   
- 
-
-   
-
-
-
-
-
-
-   
